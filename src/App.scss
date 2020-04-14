@@ -1,0 +1,42 @@
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  text-align: center;
+}
+
+.App {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  .left {
+    overflow-y: scroll;
+    min-height: 98vh;
+    width: 20vw;
+    border: 3px solid black;
+  }
+  .right {
+    width: 70vw;
+    border: 3px solid black;
+    min-height: 98vh;
+    position: relative;
+    .mymap {
+      position: absolute;
+      left: 1%;
+      top: 1%;
+      width: 98%;
+      height: 98%;
+      border: 3px solid black;
+    }
+
+    .long-and-lat-and-zoom {
+      z-index: 10 !important;
+      position: absolute;
+      left: 1%;
+      top: 1%;
+      background: rgba(0, 0, 0, 0.8);
+      padding: 10px;
+      color: white;
+    }
+  }
+}
