@@ -27,3 +27,7 @@ https://docs.mapbox.com/mapbox-gl-js/example/geojson-markers/
 
 3. data fetching
    const data = await fetch("https://bing.com/covid/data");
+
+4.
+
+https://docs.mapbox.com/mapbox-gl-js/example/toggle-layers/

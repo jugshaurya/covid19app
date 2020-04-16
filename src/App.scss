@@ -3,6 +3,7 @@
   padding: 0;
   margin: 0;
   text-align: center;
+  font-family: monospace;
 }
 
 .App {
@@ -10,30 +11,76 @@
   justify-content: center;
   align-items: center;
   .left {
-    overflow-y: scroll;
-    min-height: 98vh;
     width: 20vw;
+    height: 100vh;
     border: 3px solid black;
+    overflow: scroll;
+
+    ul {
+      li.country {
+        padding: 5px;
+        border: 2px solid lightcoral;
+        border-radius: 2px;
+        margin: 5px;
+        font-size: large;
+        cursor: pointer;
+        display: flex;
+        justify-content: left;
+        align-items: center;
+        .stats {
+          margin-left: auto;
+          font-size: small;
+          margin-right: 10px;
+          text-align: right;
+        }
+        &:hover {
+          background: rgba(0, 0, 0, 0.1);
+        }
+      }
+
+      li.template {
+        font-size: x-large;
+        border: 2px solid black;
+        &:hover {
+          background: none;
+          cursor: none;
+        }
+      }
+    }
   }
+
   .right {
-    width: 70vw;
+    overflow: hidden;
+    height: 100vh;
+    width: 80vw;
     border: 3px solid black;
-    min-height: 98vh;
     position: relative;
     .mymap {
       position: absolute;
-      left: 1%;
-      top: 1%;
-      width: 98%;
-      height: 98%;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      right: 0;
+      width: 100%;
+      height: 100%;
       border: 3px solid black;
     }
 
     .long-and-lat-and-zoom {
       z-index: 10 !important;
       position: absolute;
-      left: 1%;
-      top: 1%;
+      left: 0;
+      top: 0;
+      background: rgba(0, 0, 0, 0.8);
+      padding: 10px;
+      color: white;
+    }
+
+    .color-info {
+      z-index: 10 !important;
+      position: absolute;
+      left: 0;
+      bottom: 0;
       background: rgba(0, 0, 0, 0.8);
       padding: 10px;
       color: white;
