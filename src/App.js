@@ -22,7 +22,7 @@ class App extends React.Component {
 
   fetchData = async () => {
     try {
-      const response = await fetch("http://localhost:8088/api/v1/data");
+      const response = await fetch("http://localhost:8081/api/v1/data");
       const dataset = await response.json();
       const countries = dataset.areas;
 
@@ -147,6 +147,11 @@ class App extends React.Component {
       },
     ];
 
+    const popup = new mapboxgl.Popup({
+      closeButton: false,
+      closeOnClick: false,
+    });
+
     // add on load Listeners for every source
     map.on("load", () => {
       sources.map((source) => {
@@ -154,7 +159,8 @@ class App extends React.Component {
           type: "geojson",
           data: source.data,
         });
-        return map.addLayer({
+
+        map.addLayer({
           id: source.id,
           source: source.source, // this should be the id of the source
           type: "circle",
@@ -173,6 +179,37 @@ class App extends React.Component {
             ],
             "circle-color": source.color,
           },
+        });
+
+        map.on("mousemove", source.id, (e) => {
+          const coordinates = e.features[0].geometry.coordinates;
+          const {
+            displayName,
+            totalConfirmed,
+            totalDeaths,
+            totalRecovered,
+          } = e.features[0].properties;
+
+          popup
+            .setLngLat(coordinates)
+            .setHTML(
+              `<div className="popup-html">
+                  <p>Country: <b>${displayName}</b></p>
+                  <p>TotalConfirmed: <b>${totalConfirmed}</b></p>
+                  <p>Deaths: <b>${
+                    totalDeaths === "null" ? 0 : totalDeaths
+                  }</b></p>
+                  <p>Recovered: <b>${
+                    totalRecovered === "null" ? 0 : totalRecovered
+                  }</b></p>
+              </div>`
+            )
+            .addTo(map);
+        });
+
+        // Mouse leave event
+        map.on("mouseleave", source.id, function () {
+          popup.remove();
         });
       });
     });
