@@ -31,3 +31,6 @@ https://docs.mapbox.com/mapbox-gl-js/example/geojson-markers/
 4.
 
 https://docs.mapbox.com/mapbox-gl-js/example/toggle-layers/
+
+5. https://docs.mapbox.com/mapbox-gl-js/example/jump-to/
+6. https://docs.mapbox.com/mapbox-gl-js/example/popup-on-hover/

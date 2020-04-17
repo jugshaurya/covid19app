@@ -8,6 +8,7 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import "./App.scss";
 
 mapboxgl.accessToken = mapbox_token_key;
+
 class App extends React.Component {
   state = {
     lat: "22.4034",
@@ -49,6 +50,9 @@ class App extends React.Component {
         const states = country.areas;
         states.map((state) => {
           const cities = state.areas;
+          // pushing the states data in the citiesData if no cities data found for a state like china!
+          if (cities.length === 0) return acc.push(state);
+          // otherwise adding cities data
           return cities.map((city) => acc.push(city));
         });
         return acc;
@@ -85,6 +89,8 @@ class App extends React.Component {
       zoom,
     });
 
+    this.map = map;
+
     // map move listener to update the lat, long, zoom of map
     map.on("move", () => {
       this.setState({
@@ -114,97 +120,76 @@ class App extends React.Component {
   }
 
   addMapLayers = (map) => {
-    // add on load Lisetners
-    map.on("load", () => {
-      map.addSource("countries_points", {
-        type: "geojson",
+    const sources = [
+      {
         data: this.state.countries_geo_json,
-      });
-      map.addLayer({
+        source: "countries_points",
         id: "countries_circles",
-        source: "countries_points", // this should be the id of the source
-        type: "circle",
-        // paint properties
-        paint: {
-          "circle-stroke-width": 1,
-          "circle-opacity": 0.5,
-          "circle-radius": [
-            "interpolate",
-            ["linear"],
-            ["get", "totalConfirmed"],
-            0,
-            1,
-            1000,
-            10,
-            25000,
-            20,
-            50000,
-            30,
-            100000,
-            40,
-          ],
-          "circle-color": "#FF0000",
-        },
-      });
-
-      map.addSource("states_points", {
-        type: "geojson",
+        stops: [0, 1, 1000, 10, 25000, 20, 50000, 30, 100000, 40],
+        color: "#0000FF",
+        visibility: "none",
+      },
+      {
         data: this.state.states_geo_json,
-      });
-
-      map.addLayer({
+        source: "states_points",
         id: "states_circles",
-        source: "states_points", // this should be the id of the source
-        type: "circle",
-        // paint properties
-        paint: {
-          "circle-stroke-width": 1,
-          "circle-opacity": 0.5,
-          "circle-radius": [
-            "interpolate",
-            ["linear"],
-            ["get", "totalConfirmed"],
-            1000,
-            10,
-            25000,
-            20,
-            50000,
-            25,
-            100000,
-            40,
-          ],
-          "circle-color": "#00FF00",
-        },
-      });
-
-      map.addSource("cities_points", {
-        type: "geojson",
+        stops: [1000, 8, 25000, 10, 50000, 13, 100000, 15],
+        color: "#00FF00",
+        visibility: "none",
+      },
+      {
         data: this.state.cities_geo_json,
-      });
-      map.addLayer({
+        source: "cities_points",
         id: "cities_circles",
-        source: "cities_points", // this should be the id of the source
-        type: "circle",
-        // paint properties
-        paint: {
-          "circle-stroke-width": 1,
-          "circle-opacity": 0.5,
-          "circle-radius": [
-            "interpolate",
-            ["linear"],
-            ["get", "totalConfirmed"],
-            0,
-            5,
-            1000,
-            10,
-            25000,
-            15,
-            50000,
-            20,
-          ],
-          "circle-color": "#0000FF",
-        },
+        stops: [0, 5, 100, 8, 500, 12, 1000, 16, 2000, 18, 5000, 22],
+        color: "#FF0000",
+        visibility: "visible",
+      },
+    ];
+
+    // add on load Listeners for every source
+    map.on("load", () => {
+      sources.map((source) => {
+        map.addSource(source.source, {
+          type: "geojson",
+          data: source.data,
+        });
+        return map.addLayer({
+          id: source.id,
+          source: source.source, // this should be the id of the source
+          type: "circle",
+          layout: {
+            visibility: source.visibility,
+          },
+          // paint properties
+          paint: {
+            "circle-stroke-width": 1,
+            "circle-opacity": 0.5,
+            "circle-radius": [
+              "interpolate",
+              ["linear"],
+              ["get", "totalConfirmed"],
+              ...source.stops,
+            ],
+            "circle-color": source.color,
+          },
+        });
       });
+    });
+  };
+
+  handleSpecificCountry = (e, countryId) => {
+    const { dataset } = this.state;
+    const countries = dataset.areas;
+    const requiredCountry = countries.find(
+      (country) => country.id === countryId
+    );
+    // show a layer for each city in requiredCountry
+    console.log(requiredCountry);
+    this.map.jumpTo({ center: [requiredCountry.long, requiredCountry.lat] });
+    this.setState({
+      lat: requiredCountry.lat.toFixed(4),
+      lng: requiredCountry.long.toFixed(4),
     });
   };
 
@@ -213,7 +198,11 @@ class App extends React.Component {
     return (
       countryWiseData &&
       countryWiseData.map((country) => (
-        <li className="country" key={country.id}>
+        <li
+          className="country"
+          key={country.id}
+          onClick={(e) => this.handleSpecificCountry(e, country.id)}
+        >
           <div className="name">{country.displayName}</div>
           <div className="stats">
             <div className="death" style={{ color: "red" }}>
@@ -252,6 +241,17 @@ class App extends React.Component {
   // 18018
   // totalRecoveredDelta
 
+  handleLayerChange = (e, id) => {
+    e.preventDefault();
+    // e.stopPropagation();
+
+    const visibility = this.map.getLayoutProperty(id, "visibility");
+    if (visibility === "visible") {
+      this.map.setLayoutProperty(id, "visibility", "none");
+    } else {
+      this.map.setLayoutProperty(id, "visibility", "visible");
+    }
+  };
   render() {
     const { lng, lat, zoom } = this.state;
     // this.map && this.addLayers();
@@ -282,9 +282,22 @@ class App extends React.Component {
           </div>
           <div className="mymap" ref={this.mapboxElRef} />
           <div className="color-info">
-            <div>
-              Red: {"Country-wise"} | Green: {"State-wise"} | Blue:{" "}
-              {"cities-wise"}
+            <div className="ChangeLayer">
+              <button
+                onClick={(e) => this.handleLayerChange(e, "cities_circles")}
+              >
+                Red: {"city-wise"}
+              </button>
+              <button
+                onClick={(e) => this.handleLayerChange(e, "states_circles")}
+              >
+                Blue: {"state-wise"}
+              </button>
+              <button
+                onClick={(e) => this.handleLayerChange(e, "countries_circles")}
+              >
+                Green: {"Country-wise"}
+              </button>
             </div>
           </div>
         </div>
