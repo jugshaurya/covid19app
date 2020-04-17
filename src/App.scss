@@ -13,21 +13,22 @@
   .left {
     width: 20vw;
     height: 100vh;
-    border: 3px solid black;
+    // border: 3px solid black;
     overflow: scroll;
 
     ul {
       li.country {
         padding: 5px;
-        border: 2px solid lightcoral;
+        border-bottom: 2px solid lightcoral;
         border-radius: 5px;
-        margin: 5px;
+        margin: 10px;
         font-size: small;
         cursor: pointer;
         display: flex;
         justify-content: left;
         align-items: center;
         .stats {
+          font-weight: bold;
           margin-left: auto;
           font-size: small;
           margin-right: 10px;
@@ -53,7 +54,7 @@
     overflow: hidden;
     height: 100vh;
     width: 80vw;
-    border: 3px solid black;
+    // border: 3px solid black;
     position: relative;
     .mymap {
       position: absolute;
@@ -81,9 +82,17 @@
       position: absolute;
       left: 0;
       bottom: 0;
-      background: rgba(0, 0, 0, 0.8);
       padding: 10px;
       color: white;
     }
   }
+}
+
+button {
+  padding: 10px;
+  color: slateblue;
+  border: 3px solid saddlebrown;
+  color: blue;
+  margin: 0;
+  cursor: pointer;
 }

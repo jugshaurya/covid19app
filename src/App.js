@@ -15,14 +15,15 @@ class App extends React.Component {
     lng: "80.6",
     zoom: "3.2",
     dataset: [],
-    layer: 2, // options are 0 ,1 ,2
   };
 
   mapboxElRef = React.createRef();
 
   fetchData = async () => {
     try {
-      const response = await fetch("http://localhost:8081/api/v1/data");
+      const response = await fetch(
+        "https://covid19-server-iota.now.sh/api/v1/data"
+      );
       const dataset = await response.json();
       const countries = dataset.areas;
 
@@ -120,52 +121,108 @@ class App extends React.Component {
   }
 
   addMapLayers = (map) => {
-    const sources = [
+    const layerData = [
       {
         data: this.state.countries_geo_json,
-        source: "countries_points",
-        id: "countries_circles",
+        layer: "countries_points_c",
+        id: "countries_circles_c",
         stops: [0, 1, 1000, 10, 25000, 20, 50000, 30, 100000, 40],
         color: "#0000FF",
         visibility: "none",
+        property: "totalConfirmed",
       },
       {
         data: this.state.states_geo_json,
-        source: "states_points",
-        id: "states_circles",
+        layer: "states_points_c",
+        id: "states_circles_c",
         stops: [1000, 8, 25000, 10, 50000, 13, 100000, 15],
         color: "#00FF00",
         visibility: "none",
+        property: "totalConfirmed",
       },
       {
         data: this.state.cities_geo_json,
-        source: "cities_points",
-        id: "cities_circles",
+        layer: "cities_points_c",
+        id: "cities_circles_c",
         stops: [0, 5, 100, 8, 500, 12, 1000, 16, 2000, 18, 5000, 22],
         color: "#FF0000",
         visibility: "visible",
+        property: "totalConfirmed",
+      },
+      {
+        data: this.state.countries_geo_json,
+        layer: "countries_points_d",
+        id: "countries_circles_d",
+        stops: [0, 1, 1000, 10, 25000, 20, 50000, 30, 100000, 40],
+        color: "#0000FF",
+        visibility: "none",
+        property: "totalDeaths",
+      },
+      {
+        data: this.state.states_geo_json,
+        layer: "states_points_d",
+        id: "states_circles_d",
+        stops: [1000, 8, 25000, 10, 50000, 13, 100000, 15],
+        color: "#00FF00",
+        visibility: "none",
+        property: "totalDeaths",
+      },
+      {
+        data: this.state.cities_geo_json,
+        layer: "cities_points_d",
+        id: "cities_circles_d",
+        stops: [0, 5, 100, 8, 500, 12, 1000, 16, 2000, 18, 5000, 22],
+        color: "#FF0000",
+        visibility: "none",
+        property: "totalDeaths",
+      },
+      {
+        data: this.state.countries_geo_json,
+        layer: "countries_points_r",
+        id: "countries_circles_r",
+        stops: [0, 1, 1000, 10, 25000, 20, 50000, 30, 100000, 40],
+        color: "#0000FF",
+        visibility: "none",
+        property: "totalRecovered",
+      },
+      {
+        data: this.state.states_geo_json,
+        layer: "states_points_r",
+        id: "states_circles_r",
+        stops: [1000, 8, 25000, 10, 50000, 13, 100000, 15],
+        color: "#00FF00",
+        visibility: "none",
+        property: "totalRecovered",
+      },
+      {
+        data: this.state.cities_geo_json,
+        layer: "cities_points_r",
+        id: "cities_circles_r",
+        stops: [0, 5, 100, 8, 500, 12, 1000, 16, 2000, 18, 5000, 22],
+        color: "#FF0000",
+        visibility: "none",
+        property: "totalRecovered",
       },
     ];
-
     const popup = new mapboxgl.Popup({
       closeButton: false,
       closeOnClick: false,
     });
 
-    // add on load Listeners for every source
+    // add on load Listeners for every layer
     map.on("load", () => {
-      sources.map((source) => {
-        map.addSource(source.source, {
+      layerData.map((layer) => {
+        map.addSource(layer.layer, {
           type: "geojson",
-          data: source.data,
+          data: layer.data,
         });
 
         map.addLayer({
-          id: source.id,
-          source: source.source, // this should be the id of the source
+          id: layer.id,
+          source: layer.layer, // this should be the id of the layer
           type: "circle",
           layout: {
-            visibility: source.visibility,
+            visibility: layer.visibility,
           },
           // paint properties
           paint: {
@@ -174,14 +231,14 @@ class App extends React.Component {
             "circle-radius": [
               "interpolate",
               ["linear"],
-              ["get", "totalConfirmed"],
-              ...source.stops,
+              ["get", layer.property],
+              ...layer.stops,
             ],
-            "circle-color": source.color,
+            "circle-color": layer.color,
           },
         });
 
-        map.on("mousemove", source.id, (e) => {
+        map.on("mousemove", layer.id, (e) => {
           const coordinates = e.features[0].geometry.coordinates;
           const {
             displayName,
@@ -208,7 +265,7 @@ class App extends React.Component {
         });
 
         // Mouse leave event
-        map.on("mouseleave", source.id, function () {
+        map.on("mouseleave", layer.id, function () {
           popup.remove();
         });
       });
@@ -221,8 +278,8 @@ class App extends React.Component {
     const requiredCountry = countries.find(
       (country) => country.id === countryId
     );
+
     // show a layer for each city in requiredCountry
-    console.log(requiredCountry);
     this.map.jumpTo({ center: [requiredCountry.long, requiredCountry.lat] });
     this.setState({
       lat: requiredCountry.lat.toFixed(4),
@@ -254,34 +311,9 @@ class App extends React.Component {
     );
   };
 
-  //  displayName
-  // "New York City"
-  // id
-  // "newyorkcity_newyork_unitedstates"
-  // lastUpdated
-  // "2020-04-16T06:56:53.248Z"
-  // lat
-  // 40.71455001831055
-  // long
-  // -74.00714111328125
-  // parentId
-  // "newyork_unitedstates"
-  // totalConfirmed
-  // 118302
-  // totalConfirmedDelta
-  // 7877
-  // totalDeaths
-  // 10899
-  // totalDeathsDelta
-  // 2994
-  // totalRecovered
-  // 18018
-  // totalRecoveredDelta
-
   handleLayerChange = (e, id) => {
     e.preventDefault();
     // e.stopPropagation();
-
     const visibility = this.map.getLayoutProperty(id, "visibility");
     if (visibility === "visible") {
       this.map.setLayoutProperty(id, "visibility", "none");
@@ -290,7 +322,7 @@ class App extends React.Component {
     }
   };
   render() {
-    const { lng, lat, zoom } = this.state;
+    const { lng, lat, zoom, dataset } = this.state;
     // this.map && this.addLayers();
     return (
       <div className="App">
@@ -304,6 +336,17 @@ class App extends React.Component {
                 </div>
                 <div className="recovered" style={{ color: "green" }}>
                   Recovered
+                </div>
+              </div>
+            </li>
+            <li className="template country">
+              <div className="name">Global</div>
+              <div className="stats">
+                <div className="death" style={{ color: "red" }}>
+                  {dataset.totalDeaths}
+                </div>
+                <div className="recovered" style={{ color: "green" }}>
+                  {dataset.totalRecovered}
                 </div>
               </div>
             </li>
@@ -321,20 +364,62 @@ class App extends React.Component {
           <div className="color-info">
             <div className="ChangeLayer">
               <button
-                onClick={(e) => this.handleLayerChange(e, "cities_circles")}
+                onClick={(e) => this.handleLayerChange(e, "cities_circles_c")}
               >
                 Red: {"city-wise"}
               </button>
               <button
-                onClick={(e) => this.handleLayerChange(e, "states_circles")}
+                onClick={(e) => this.handleLayerChange(e, "states_circles_c")}
               >
-                Blue: {"state-wise"}
+                Green: {"state-wise"}
               </button>
               <button
-                onClick={(e) => this.handleLayerChange(e, "countries_circles")}
+                onClick={(e) =>
+                  this.handleLayerChange(e, "countries_circles_c")
+                }
               >
-                Green: {"Country-wise"}
+                Blue: {"Country-wise"}
               </button>
+              <button> {"<- Confirmed "}</button>
+              <br></br>
+
+              <button
+                onClick={(e) => this.handleLayerChange(e, "cities_circles_r")}
+              >
+                Red: {"city-wise"}
+              </button>
+              <button
+                onClick={(e) => this.handleLayerChange(e, "states_circles_r")}
+              >
+                Green: {"state-wise"}
+              </button>
+              <button
+                onClick={(e) =>
+                  this.handleLayerChange(e, "countries_circles_r")
+                }
+              >
+                Blue: {"Country-wise"}
+              </button>
+              <button> {"<- Recovered"}</button>
+              <br></br>
+              <button
+                onClick={(e) => this.handleLayerChange(e, "cities_circles_d")}
+              >
+                Red: {"city-wise"}
+              </button>
+              <button
+                onClick={(e) => this.handleLayerChange(e, "states_circles_d")}
+              >
+                Green: {"state-wise"}
+              </button>
+              <button
+                onClick={(e) =>
+                  this.handleLayerChange(e, "countries_circles_d")
+                }
+              >
+                Blue: {"Country-wise"}
+              </button>
+              <button> {"<- Deaths"}</button>
             </div>
           </div>
         </div>
