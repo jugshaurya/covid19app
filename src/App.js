@@ -103,12 +103,6 @@ class App extends React.Component {
 
     // controllers on screen for client
     map.addControl(new mapboxgl.NavigationControl());
-
-    // fetching data for covid19
-    await this.fetchData();
-
-    this.addMapLayers(map);
-
     //  Add geolocate control to the map to let user knew his/her location.
     map.addControl(
       new mapboxgl.GeolocateControl({
@@ -118,6 +112,11 @@ class App extends React.Component {
         trackUserLocation: true,
       })
     );
+
+    // fetching data for covid19
+    await this.fetchData();
+
+    this.addMapLayers(map);
   }
 
   addMapLayers = (map) => {
@@ -126,7 +125,7 @@ class App extends React.Component {
         data: this.state.countries_geo_json,
         layer: "countries_points_c",
         id: "countries_circles_c",
-        stops: [0, 1, 1000, 10, 25000, 20, 50000, 30, 100000, 40],
+        stops: [0, 1, 100, 2, 1000, 3, 25000, 5, 50000, 7, 100000, 9],
         color: "#0000FF",
         visibility: "none",
         property: "totalConfirmed",
@@ -299,11 +298,14 @@ class App extends React.Component {
         >
           <div className="name">{country.displayName}</div>
           <div className="stats">
-            <div className="death" style={{ color: "red" }}>
-              {country.totalDeaths}
+            <div className="confirmed" style={{ color: "blue" }}>
+              {country.totalConfirmed}
             </div>
             <div className="recovered" style={{ color: "green" }}>
               {country.totalRecovered}
+            </div>
+            <div className="death" style={{ color: "red" }}>
+              {country.totalDeaths}
             </div>
           </div>
         </li>
@@ -331,22 +333,28 @@ class App extends React.Component {
             <li className="template country">
               <div className="name">Country</div>
               <div className="stats">
-                <div className="death" style={{ color: "red" }}>
-                  Deaths
+                <div className="confirmed" style={{ color: "blue" }}>
+                  Confirmed
                 </div>
                 <div className="recovered" style={{ color: "green" }}>
                   Recovered
+                </div>
+                <div className="death" style={{ color: "red" }}>
+                  Deaths
                 </div>
               </div>
             </li>
             <li className="template country">
               <div className="name">Global</div>
               <div className="stats">
-                <div className="death" style={{ color: "red" }}>
-                  {dataset.totalDeaths}
+                <div className="confirmed" style={{ color: "blue" }}>
+                  {dataset.totalConfirmed}
                 </div>
                 <div className="recovered" style={{ color: "green" }}>
                   {dataset.totalRecovered}
+                </div>
+                <div className="death" style={{ color: "red" }}>
+                  {dataset.totalDeaths}
                 </div>
               </div>
             </li>
@@ -363,63 +371,109 @@ class App extends React.Component {
           <div className="mymap" ref={this.mapboxElRef} />
           <div className="color-info">
             <div className="ChangeLayer">
-              <button
-                onClick={(e) => this.handleLayerChange(e, "cities_circles_c")}
-              >
-                Red: {"city-wise"}
-              </button>
-              <button
-                onClick={(e) => this.handleLayerChange(e, "states_circles_c")}
-              >
-                Green: {"state-wise"}
-              </button>
-              <button
-                onClick={(e) =>
-                  this.handleLayerChange(e, "countries_circles_c")
-                }
-              >
-                Blue: {"Country-wise"}
-              </button>
-              <button> {"<- Confirmed "}</button>
-              <br></br>
+              <table>
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th>City-wise</th>
+                    <th>State-wise</th>
+                    <th>Country-wise</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="non-btn">{"Confirmed "}</td>
+                    <td>
+                      <button
+                        onClick={(e) =>
+                          this.handleLayerChange(e, "cities_circles_c")
+                        }
+                      >
+                        Red
+                      </button>
+                    </td>
+                    <td>
+                      <button
+                        onClick={(e) =>
+                          this.handleLayerChange(e, "states_circles_c")
+                        }
+                      >
+                        Green
+                      </button>
+                    </td>
+                    <td>
+                      <button
+                        onClick={(e) =>
+                          this.handleLayerChange(e, "countries_circles_c")
+                        }
+                      >
+                        Blue
+                      </button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="non-btn">{"Recovered "}</td>
 
-              <button
-                onClick={(e) => this.handleLayerChange(e, "cities_circles_r")}
-              >
-                Red: {"city-wise"}
-              </button>
-              <button
-                onClick={(e) => this.handleLayerChange(e, "states_circles_r")}
-              >
-                Green: {"state-wise"}
-              </button>
-              <button
-                onClick={(e) =>
-                  this.handleLayerChange(e, "countries_circles_r")
-                }
-              >
-                Blue: {"Country-wise"}
-              </button>
-              <button> {"<- Recovered"}</button>
-              <br></br>
-              <button
-                onClick={(e) => this.handleLayerChange(e, "cities_circles_d")}
-              >
-                Red: {"city-wise"}
-              </button>
-              <button
-                onClick={(e) => this.handleLayerChange(e, "states_circles_d")}
-              >
-                Green: {"state-wise"}
-              </button>
-              <button
-                onClick={(e) =>
-                  this.handleLayerChange(e, "countries_circles_d")
-                }
-              >
-                Blue: {"Country-wise"}
-              </button>
-              <button> {"<- Deaths"}</button>
+                    <td>
+                      <button
+                        onClick={(e) =>
+                          this.handleLayerChange(e, "cities_circles_r")
+                        }
+                      >
+                        Red
+                      </button>
+                    </td>
+                    <td>
+                      <button
+                        onClick={(e) =>
+                          this.handleLayerChange(e, "states_circles_r")
+                        }
+                      >
+                        Green
+                      </button>
+                    </td>
+                    <td>
+                      <button
+                        onClick={(e) =>
+                          this.handleLayerChange(e, "countries_circles_r")
+                        }
+                      >
+                        Blue
+                      </button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="non-btn">{"Deaths "}</td>
+                    <td>
+                      <button
+                        onClick={(e) =>
+                          this.handleLayerChange(e, "cities_circles_d")
+                        }
+                      >
+                        Red
+                      </button>
+                    </td>
+                    <td>
+                      <button
+                        onClick={(e) =>
+                          this.handleLayerChange(e, "states_circles_d")
+                        }
+                      >
+                        Green
+                      </button>
+                    </td>
+                    <td>
+                      <button
+                        onClick={(e) =>
+                          this.handleLayerChange(e, "countries_circles_d")
+                        }
+                      >
+                        Blue
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
