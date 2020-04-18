@@ -1,7 +1,9 @@
 # :octocat: Covid19 App - Microsoft Bing Covid19 Visualizer 🌍
 
+[visit](https://covid19shau.now.sh/)
+
 <img src="https://img.shields.io/badge/made%20with-react-cyan.svg" alt="made with react"> <img src="https://img.shields.io/badge/made%20with-scss-pink.svg" alt="made with scss"> <img src="https://img.shields.io/badge/made%20with-mapbox-red.svg" alt="made with mapbox">
-<img src="https://img.shields.io/badge/made%20with-geojson-violet.svg" alt="made with geojson"><img src="https://img.shields.io/badge/made%20with-express-yellow.svg" alt="made with express"> <img src="https://img.shields.io/github/last-commit/jugshaurya/covid19app" alt="last-commit"> <img src="https://img.shields.io/github/languages/code-size/jugshaurya/covid19app" alt="code-size">
+<img src="https://img.shields.io/badge/made%20with-geojson-violet.svg" alt="made with geojson"> <img src="https://img.shields.io/badge/made%20with-express-yellow.svg" alt="made with express"> <img src="https://img.shields.io/github/last-commit/jugshaurya/covid19app" alt="last-commit"> <img src="https://img.shields.io/github/languages/code-size/jugshaurya/covid19app" alt="code-size">
 
 ### Peek a boo!😍
 
@@ -35,11 +37,11 @@
 
 ### What you need
 
-- A Mapbox access token. Your Mapbox access tokens are on your Account page.
-- Mapbox GL JS. Mapbox GL JS is a JavaScript library used for building web maps.
 - A text editor. Use the text editor of your choice for writing HTML, CSS, and JavaScript.
+- A Mapbox access token. Your Mapbox access tokens are on your Account page.
 - Node.js and npm. To run the commands necessary to run your React app locally, install Node.js and npm.
-- Working familiarity with React. You don't need to have a lot of experience using React to complete this tutorial, but you should be familiar with the underlying concepts and workflows.
+- Working familiarity with React.
+- Mapbox GL JS. Mapbox GL JS is a JavaScript library used for building web maps.
 
 ### Wanna Contribute
 
@@ -50,4 +52,11 @@ yarn start - to run frontend
 make changes
 send PRs
 Get them merge into the codebase✌✌✌
+```
+
+### server and frontend on now.sh
+
+```
+https://covid19shau.now.sh/
+https://covid19-server-iota.now.sh/
 ```
